@@ -255,11 +255,17 @@ stereotypes included, in the exact format the *Model* screen uploads
 
 **Once per Modelio installation**
 
-1. Build and install **ModelioUtils** 5.4.01 from
-   [gitlab.com/jose.torres.acceliance/modelioutils](https://gitlab.com/jose.torres.acceliance/modelioutils).
-   GraphRag requires it.
-2. Add [`modelio/GraphRag_5.4.01.jmdac`](modelio/) to the catalog: *Configuration ▸ Modules
-   catalog ▸ Add a module to the catalog…*.
+1. Pull the public repository
+   [acceliance/ModelioForDataGovernance](https://github.com/acceliance/ModelioForDataGovernance),
+   which ships **ModelioUtils** 5.4.01 prebuilt (GraphRag requires it):
+
+   ```bash
+   git clone https://github.com/acceliance/ModelioForDataGovernance.git
+   ```
+
+   Add `ModelioForDataGovernance/modules/ModelioUtils_5.4.01.jmdac` to the catalog:
+   *Configuration ▸ Modules catalog ▸ Add a module to the catalog…*.
+2. Add [`modelio/GraphRag_5.4.01.jmdac`](modelio/) to the catalog the same way.
 
 **Once per Modelio project**
 
