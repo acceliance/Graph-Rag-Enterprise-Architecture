@@ -66,7 +66,7 @@ services:
 
   # ── 2. Neo4j — facts store (metamodel + typed instance graph) ───────────────
   neo4j:
-    image: neo4j:${NEO4J_TAG:-5.26-community}
+    image: neo4j:${NEO4J_TAG:-5.26.30-community}
     container_name: graphrag-neo4j
     restart: unless-stopped
     environment:
@@ -142,6 +142,13 @@ services:
       # REQUIRED for any deployment not reached over localhost, else 421.
       - MCP_ALLOWED_HOSTS=${MCP_ALLOWED_HOSTS:-}
       - MCP_ALLOWED_ORIGINS=${MCP_ALLOWED_ORIGINS:-}
+
+      # A2A endpoint (DFS §7.9): same three states as MCP_ENABLED.
+      - A2A_ENABLED=${A2A_ENABLED:-}
+      - A2A_PUBLIC_URL=${A2A_PUBLIC_URL:-}
+
+      # Admin ▸ Database "clean the whole database": refused unless true (irreversible)
+      - GRAPHRAG_ALLOW_PURGE=${GRAPHRAG_ALLOW_PURGE:-false}
 
       - TZ=${TZ:-Europe/Paris}
     healthcheck:
