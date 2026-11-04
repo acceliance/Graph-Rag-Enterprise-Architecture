@@ -2,15 +2,17 @@
 
 JSON Schema for every file format this deployment kit's users create, upload or read.
 This folder, including this README, is synced verbatim from `graph-rag-application\Schemas`
-(the source of truth) by `Sync-SchemasToDeployKit.ps1`, which also copies the schemas into
-the API image. Edit files there, not in `Graph-Rag-Deploy\schemas`; a re-sync overwrites any
-local change. Relative links below resolve in the `Graph-Rag-Deploy` layout.
+(the source of truth) by `Sync-SchemasToDeployKit.ps1` into `Graph-Rag-Deploy\schemas` and
+`Graph-Rag-Enterprise-Archicturecture\schemas`; the script also copies the schemas into the
+API image. Edit files there, not in a synced copy; a re-sync overwrites any local change.
+Relative links below resolve in the `Graph-Rag-Deploy` layout.
 
 | File | Draft | Validates | Used for |
 |---|---|---|---|
 | `schema_uml_model.json` | 2020-12 | The data model JSON uploaded from *Model* (e.g. [`samples/model/billing-model-stereotyped.json`](../samples/model/billing-model-stereotyped.json)) | Classes, attributes, relations, enumerations, and stereotypes; the GraphRag stereotypes carry the Graph-RAG settings (identity keys, normalisation, fuzzy matching, anchor classes, extraction hints, extraction groups, indexed attributes) |
 | `ingestion-ledger.schema.json` | 2020-12 | The per-document ledger the API writes to `./data/api/ingestion/<docId>.json` | Reading a ledger by hand — audit trail, retry/resume, and the input of re-index and rebuild jobs |
 | `ai-prompt-markdown-schema.json` | Draft-07 | A Markdown prompt or profile file after `gray-matter` front-matter parsing (e.g. [`samples/profiles/`](../samples/profiles/)) | Front-matter structure of a custom agent profile or prompt override |
+| `brand-theme.schema.json` | 2020-12 | The web brand theme uploaded from *Administration → Brand theme* (`POST /files/brand-theme`) | Customer identity: name, eyebrow, logos and favicon, the colour palette and free-form CSS variable overrides, applied at runtime with no redeploy; with no theme the app keeps its default design tokens |
 
 **Not published here:** `users.schema.json`, the application's internal account store.
 It is an implementation detail of the API, never a file a deployment kit user authors.
