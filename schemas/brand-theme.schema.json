@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://owl.acceliance.fr/schemas/brand-theme.schema.json",
+  "title": "Web brand theme (Graph RAG)",
+  "description": "Schema of a Graph RAG customer's reconfigurable web brand theme. It describes ONLY the fields actually used by the application: brand identity (name, eyebrow, logos), the colour palette (translated into CSS variables) and free-form CSS variable overrides. The front end applies these tokens at runtime — ThemeProvider (CSS variables + title + favicon), RootLayout (logo, name, eyebrow) and the brand theme admin screen. The document is validated on upload (POST /files/brand-theme). Absent a brand theme, the application keeps its default tokens (§9.1).",
+  "type": "object",
+  "required": ["meta", "brand", "colors"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this schema (autocompletion / validation in editors)."
+    },
+    "meta": {
+      "type": "object",
+      "description": "Brand theme metadata.",
+      "required": ["client"],
+      "additionalProperties": false,
+      "properties": {
+        "client": {
+          "type": "string",
+          "description": "Customer / organisation name. Displayed on the brand theme admin screen.",
+          "minLength": 1,
+          "examples": ["Acceliance", "BankAssu"]
+        }
+      }
+    },
+
+    "brand": {
+      "type": "object",
+      "description": "Brand identity: name, eyebrow, logos.",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Displayed brand / product name. Becomes the document title (tab, EF-140) and the header name.",
+          "minLength": 1,
+          "examples": ["Acceliance", "BankAssu Graph RAG"]
+        },
+        "eyebrow": {
+          "type": "string",
+          "description": "Small-caps kicker displayed in the header above the name.",
+          "examples": ["GRAPH RAG"]
+        },
+        "logo": {
+          "type": "object",
+          "description": "Logo file references (URLs or paths).",
+          "additionalProperties": false,
+          "properties": {
+            "primary": {
+              "type": "string",
+              "description": "Primary logo (horizontal / full). Used as the header fallback when `brand.logo.mark` is absent."
+            },
+            "mark": {
+              "type": "string",
+              "description": "Reduced logo / monogram used in the header (takes priority over `primary`)."
+            },
+            "favicon": {
+              "type": "string",
+              "description": "Site favicon (ICO/PNG/SVG), applied at runtime without redeployment (EF-133)."
+            }
+          }
+        }
+      }
+    },
+
+    "colors": {
+      "type": "object",
+      "description": "Functional palette. Each key is translated by the application into a CSS variable (custom property). Absent keys keep the application's default token (§9.1).",
+      "required": ["background", "surface", "text", "primary"],
+      "additionalProperties": false,
+      "properties": {
+        "background": { "$ref": "#/$defs/color", "description": "General page background (→ --bg)." },
+        "surface": { "$ref": "#/$defs/color", "description": "Cards / panels, foreground (→ --surface)." },
+        "surfaceAlt": { "$ref": "#/$defs/color", "description": "Alternate surface, sections / hover states (→ --surface-alt)." },
+        "text": { "$ref": "#/$defs/color", "description": "Main text / ink colour (→ --ink)." },
+        "textMuted": { "$ref": "#/$defs/color", "description": "Secondary / muted text (→ --muted)." },
+        "line": { "$ref": "#/$defs/color", "description": "Borders and separators (→ --line)." },
+        "primary": { "$ref": "#/$defs/color", "description": "Primary brand colour, buttons / accents (→ --blue)." },
+        "primaryAlt": { "$ref": "#/$defs/color", "description": "Primary variant, gradients / hover (→ --blue-2)." },
+        "onPrimary": { "$ref": "#/$defs/color", "description": "Text / icon placed on a primary-coloured background (→ --on-primary)." },
+        "success": { "$ref": "#/$defs/color", "description": "Success / Go / compliant (→ --green)." },
+        "warning": { "$ref": "#/$defs/color", "description": "Warning / to review (→ --amber)." },
+        "danger": { "$ref": "#/$defs/color", "description": "Error / No-Go / risk (→ --red)." }
+      }
+    },
+
+    "cssVariables": {
+      "type": "object",
+      "description": "CSS variable overrides applied as-is (key = variable name without the -- prefix, value = CSS value). Overlays and extends the `colors` palette; the most direct way to adjust any application token.",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+
+  "$defs": {
+    "color": {
+      "type": "string",
+      "description": "Colour in CSS format: hexadecimal (#rgb, #rgba, #rrggbb, #rrggbbaa) or an rgb()/rgba()/hsl()/hsla() function.",
+      "pattern": "^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|rgba?\\([^)]*\\)|hsla?\\([^)]*\\))$",
+      "examples": ["#0097b6", "#cceaf0", "rgba(0,151,182,.08)"]
+    }
+  }
+}

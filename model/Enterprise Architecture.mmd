@@ -1,0 +1,234 @@
+classDiagram
+    namespace Governance {
+        class Organisation {
+            +string name
+            +string acronym
+            +string country
+        }
+        class Person {
+            +string fullName
+            +string role
+            +string email
+        }
+        class Project {
+            +string name
+            +string description
+            +date startDate
+            +date endDate
+            +double budget
+        }
+        class DocumentRevision {
+            +string version
+            +date date
+            +string author
+            +string changes
+        }
+        class ArchitectureDocument {
+            +string title
+            +string reference
+            +string version
+            +date publicationDate
+            +string purpose
+            +integer pageCount
+            +string confidentiality
+        }
+        class ArchitecturePrinciple {
+            +string name
+            +string statement
+        }
+        class OrganisationKind {
+        }
+        class ProjectStatus {
+        }
+        class DocumentType {
+        }
+        class DocumentLanguage {
+        }
+    }
+    namespace Application {
+        class ApplicationSystem {
+            +string name
+            +string acronym
+            +string description
+            +string version
+            +integer userCount
+            +double annualCost
+        }
+        class DataObject {
+            +string name
+            +string description
+            +string sensitivity
+        }
+        class QualityRequirement {
+            +string statement
+            +string metric
+        }
+        class ArchitectureDecision {
+            +string title
+            +string rationale
+        }
+        class Component {
+            +string name
+            +string description
+            +string layer
+        }
+        class QualityAttribute {
+        }
+        class ComponentKind {
+        }
+        class ApplicationKind {
+        }
+        class LifecycleStatus {
+        }
+        class HostingModel {
+        }
+    }
+    namespace Business {
+        class BusinessArea {
+            +string name
+            +string code
+            +string description
+        }
+        class BusinessCapability {
+            +string name
+            +string code
+            +string description
+            +integer currentMaturity
+            +integer targetMaturity
+        }
+    }
+    namespace Technology_pkg {
+        class Technology {
+            +string name
+            +string version
+        }
+        class TechnologyCategory {
+        }
+        class TechnologyStatus {
+        }
+    }
+    namespace Infrastructure {
+        class Site {
+            +string name
+            +string location
+        }
+        class NetworkZone {
+            +string name
+            +string description
+        }
+        class InfrastructureNode {
+            +string name
+            +integer quantity
+            +integer cpuCount
+            +double memoryGb
+            +double storageGb
+            +string bandwidth
+        }
+        class SiteKind {
+        }
+        class NodeKind {
+        }
+        class EnvironmentKind {
+        }
+    }
+    namespace Integration {
+        class DataElement {
+            +string name
+            +integer position
+            +integer length
+            +string dataType
+            +boolean required
+            +string description
+        }
+        class DataExchange {
+            +string name
+            +string description
+            +string protocol
+            +string format
+            +string frequency
+            +string volume
+            +boolean bidirectional
+        }
+        class ExchangeMechanism {
+        }
+    }
+    Organisation "0..*" --> "0..1" OrganisationKind : kind
+    Person "0..*" --> "1" Organisation : organisation
+    Project "0..*" --> "1" Organisation : sponsor
+    ArchitectureDocument "0..*" --> "1" Organisation : issuer
+    Technology "0..*" --> "1" Organisation : vendor
+    Site "0..*" --> "1" Organisation : operator
+    ApplicationSystem "0..*" --> "1" Organisation : owner
+    ApplicationSystem "0..*" --> "1" Organisation : vendor
+    ArchitectureDocument "0..*" --> "0..*" Person : authors
+    ArchitectureDocument "0..*" --> "0..*" Person : approvers
+    Project "0..*" --> "0..1" ProjectStatus : status
+    Project "0..*" --> "0..*" ApplicationSystem : affectedSystems
+    ArchitectureDocument "0..1" --> "0..*" DocumentRevision : revisions
+    ArchitectureDocument "0..*" --> "0..1" DocumentType : documentType
+    ArchitectureDocument "0..*" --> "0..1" DocumentLanguage : language
+    ArchitectureDocument "0..*" --> "0..*" ApplicationSystem : describedSystems
+    ArchitecturePrinciple "0..*" --> "1" ArchitectureDocument : sourceDocument
+    ApplicationSystem "0..*" --> "0..1" ApplicationKind : kind
+    ApplicationSystem "0..*" --> "0..1" LifecycleStatus : status
+    ApplicationSystem "0..*" --> "0..1" HostingModel : hosting
+    ApplicationSystem "0..*" --> "1" Site : hostedAt
+    ApplicationSystem "0..*" --> "0..*" BusinessCapability : capabilities
+    ApplicationSystem "0..*" --> "0..*" Technology : technologies
+    ApplicationSystem "0..*" --> "0..*" DataObject : masterOf
+    ApplicationSystem "0..1" --> "0..*" Component : components
+    ApplicationSystem "0..1" --> "0..*" QualityRequirement : qualityRequirements
+    ApplicationSystem "0..1" --> "0..*" ArchitectureDecision : decisions
+    DataExchange "0..*" --> "1" ApplicationSystem : source
+    DataExchange "0..*" --> "1" ApplicationSystem : target
+    BusinessCapability "0..*" --> "1" BusinessArea : businessArea
+    Technology "0..*" --> "0..1" TechnologyCategory : category
+    Technology "0..*" --> "0..1" TechnologyStatus : status
+    InfrastructureNode "0..*" --> "1" Technology : technology
+    Component "0..*" --> "0..*" Technology : technologies
+    Site "0..*" --> "0..1" SiteKind : kind
+    NetworkZone "0..*" --> "1" Site : site
+    InfrastructureNode "0..*" --> "1" Site : site
+    InfrastructureNode "0..*" --> "1" NetworkZone : zone
+    InfrastructureNode "0..*" --> "0..1" NodeKind : kind
+    InfrastructureNode "0..*" --> "0..1" EnvironmentKind : environment
+    Component "0..*" --> "0..*" InfrastructureNode : hostedOn
+    DataExchange "0..*" --> "0..*" DataObject : dataObjects
+    QualityRequirement "0..*" --> "0..1" QualityAttribute : attribute
+    Component "0..*" --> "0..1" ComponentKind : kind
+    DataExchange "0..1" --> "0..*" DataElement : dataElements
+    DataExchange "0..*" --> "0..1" ExchangeMechanism : mechanism
+    style Organisation fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style Person fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style Project fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style DocumentRevision fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style ArchitectureDocument fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style ArchitecturePrinciple fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style OrganisationKind fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style ProjectStatus fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style ApplicationSystem fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style DocumentType fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style DocumentLanguage fill:#5E35B1,color:#FFFFFF,stroke:#968255
+    style BusinessArea fill:#BF360C,color:#FFFFFF,stroke:#968255
+    style BusinessCapability fill:#BF360C,color:#FFFFFF,stroke:#968255
+    style Technology fill:#2E7D32,color:#FFFFFF,stroke:#968255
+    style TechnologyCategory fill:#2E7D32,color:#FFFFFF,stroke:#968255
+    style TechnologyStatus fill:#2E7D32,color:#FFFFFF,stroke:#968255
+    style Site fill:#455A64,color:#FFFFFF,stroke:#968255
+    style NetworkZone fill:#455A64,color:#FFFFFF,stroke:#968255
+    style InfrastructureNode fill:#455A64,color:#FFFFFF,stroke:#968255
+    style SiteKind fill:#455A64,color:#FFFFFF,stroke:#968255
+    style NodeKind fill:#455A64,color:#FFFFFF,stroke:#968255
+    style EnvironmentKind fill:#455A64,color:#FFFFFF,stroke:#968255
+    style DataObject fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style QualityRequirement fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style ArchitectureDecision fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style Component fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style QualityAttribute fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style ComponentKind fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style ApplicationKind fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style LifecycleStatus fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style HostingModel fill:#1565C0,color:#FFFFFF,stroke:#968255
+    style DataElement fill:#00838F,color:#FFFFFF,stroke:#968255
+    style DataExchange fill:#00838F,color:#FFFFFF,stroke:#968255
+    style ExchangeMechanism fill:#00838F,color:#FFFFFF,stroke:#968255
