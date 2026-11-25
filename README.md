@@ -8,6 +8,8 @@
 [![Qdrant](https://img.shields.io/badge/vectors-Qdrant-DC244C)](https://qdrant.tech/)
 [![Modelio](https://img.shields.io/badge/model-Modelio%205.4-5A8F29)](https://www.modelio.org/)
 
+> **An instance of Graph-Rag-Deploy.** This project is [Graph-Rag-Deploy](https://github.com/acceliance/Graph-Rag-Deploy), the Acceliance Graph-RAG deployment kit, set up for one domain, enterprise architecture: the same product images, with a data model and sample documents of its own. For everything that is not specific to this domain, Graph-Rag-Deploy is the reference.
+
 > **First time here?** Follow the [**tutorial**](docs/tutorial/README.md): seven illustrated steps, from starting the stack to asking the *Enterprise Architect* agent about the two sample architecture documents.
 >
 > **New to the application?** Start with the [**User manual**](https://github.com/acceliance/Graph-Rag-Deploy/blob/main/USER-MANUAL.md): it walks through every screen of the web application, from asking questions to profiles and prompts, once the stack is running.
@@ -164,3 +166,5 @@ LLM cost): it wipes the graph, including review decisions.
 ## Licence
 
 The files of this repository (Compose file, scripts, schemas, model, documentation) are under the [Apache License 2.0](LICENSE). The product images ([Docker Hub](https://hub.docker.com/repositories/acceliance)) are free of use under their own licence, described in [`LICENSE-IMAGES.md`](LICENSE-IMAGES.md). The sample documents were written for this repository and are covered by the same licence: see [`samples/README.md`](samples/README.md#rights-and-usage).
+
+Without a licence file, ingestion stops at 50 documents. The licence is free: request it by e-mail at contact@acceliance.fr, see *Licensing* in [`DEPLOY.md`](DEPLOY.md).
