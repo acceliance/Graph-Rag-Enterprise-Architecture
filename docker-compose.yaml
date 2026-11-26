@@ -147,6 +147,19 @@ services:
       - A2A_ENABLED=${A2A_ENABLED:-}
       - A2A_PUBLIC_URL=${A2A_PUBLIC_URL:-}
 
+      # Authentication mode (same value as graphrag-web): standalone | office365 | google | azure
+      - AUTH_MODE=${AUTH_MODE:-standalone}
+      # OAuth on /mcp, /a2a and /public (resource server); MCP_OAUTH_ISSUER empty => keys only
+      - MCP_OAUTH_ISSUER=${MCP_OAUTH_ISSUER:-}
+      - MCP_OAUTH_AUDIENCE=${MCP_OAUTH_AUDIENCE:-}
+      - MCP_OAUTH_RESOURCE=${MCP_OAUTH_RESOURCE:-}
+      - MCP_OAUTH_SCOPES=${MCP_OAUTH_SCOPES:-}
+      - MCP_OAUTH_JWKS_URL=${MCP_OAUTH_JWKS_URL:-}
+      - MCP_OAUTH_EMAIL_CLAIMS=${MCP_OAUTH_EMAIL_CLAIMS:-}
+      - MCP_OAUTH_AUTHORIZATION_SERVERS=${MCP_OAUTH_AUTHORIZATION_SERVERS:-}
+      - A2A_OAUTH_RESOURCE=${A2A_OAUTH_RESOURCE:-}
+      - PUBLIC_API_OAUTH_RESOURCE=${PUBLIC_API_OAUTH_RESOURCE:-}
+
       # Admin ▸ Database "clean the whole database": refused unless true (irreversible)
       - GRAPHRAG_ALLOW_PURGE=${GRAPHRAG_ALLOW_PURGE:-false}
 
@@ -179,7 +192,10 @@ services:
       - "${GRAPHRAG_HTTP_BIND:-0.0.0.0}:${GRAPHRAG_HTTP_PORT:-8080}:80"
     environment:
       - GRAPHRAG_API_UPSTREAM=http://graphrag-api:8000
-      - AUTH_MODE=standalone
+      # standalone | office365 | google | azure (picks the nginx template)
+      - AUTH_MODE=${AUTH_MODE:-standalone}
+      # oauth2-proxy sidecar, used by office365 / google only
+      - OAUTH2_PROXY_UPSTREAM=http://graphrag-oauth2-proxy:4180
     healthcheck:
       test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:80/"]
       interval: 30s
@@ -189,6 +205,40 @@ services:
     depends_on:
       graphrag-api:
         condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+    networks:
+      - graphrag-net
+
+  # ── 5. oauth2-proxy — OIDC sign-in, AUTH_MODE=office365|google only ──────────
+  #    Started only with the `federated` profile: COMPOSE_PROFILES=federated in
+  #    .env (or docker compose --profile federated up -d). Internal: nginx calls it.
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    container_name: graphrag-oauth2-proxy
+    profiles: ["federated"]
+    restart: unless-stopped
+    command:
+      - --http-address=0.0.0.0:4180
+      - --reverse-proxy=true
+      - --set-xauthrequest=true          # X-Auth-Request-User/Email for nginx
+      - --upstream=static://202          # serves no app: nginx is the edge
+      - --skip-provider-button=true
+      - --email-domain=${OAUTH2_EMAIL_DOMAIN:-*}
+      - --whitelist-domain=${OAUTH2_COOKIE_DOMAIN:-}
+      - --cookie-domain=${OAUTH2_COOKIE_DOMAIN:-}
+      - --cookie-secure=${AUTH_COOKIE_SECURE:-true}
+      - --cookie-samesite=lax
+      - --cookie-expire=${OAUTH2_COOKIE_EXPIRE:-12h}
+    environment:
+      - OAUTH2_PROXY_PROVIDER=${OAUTH2_PROVIDER:-oidc}
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=${OAUTH2_OIDC_ISSUER_URL:-}
+      - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_CLIENT_ID:-}
+      - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET:-}
+      - OAUTH2_PROXY_COOKIE_SECRET=${OAUTH2_COOKIE_SECRET:-}
+      - OAUTH2_PROXY_REDIRECT_URL=${OAUTH2_REDIRECT_URL:-}
+      - OAUTH2_PROXY_SCOPE=${OAUTH2_SCOPE:-openid email profile}
     security_opt:
       - no-new-privileges:true
     logging: *logging

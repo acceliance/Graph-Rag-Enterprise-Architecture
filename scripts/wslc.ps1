@@ -135,6 +135,12 @@ if ((V AUTH_COOKIE_SECURE 'true') -eq 'true') {
     Write-Host "    AUTH_COOKIE_SECURE=true: the site must be served over HTTPS (reverse-proxy\). Set false for an HTTP pilot."
 }
 
+# wslc starts no oauth2-proxy and the edge below runs standalone: the federated
+# modes need docker compose (office365 / google) or Azure Container Apps (azure).
+if ((V AUTH_MODE 'standalone') -ne 'standalone') {
+    Fail "AUTH_MODE=$(V AUTH_MODE) needs docker compose (scripts/up.ps1), not wslc. Set AUTH_MODE=standalone to use this script."
+}
+
 $QdrantImage = "qdrant/qdrant:$(V QDRANT_TAG 'v1.15.5')"
 $Neo4jImage  = "neo4j:$(V NEO4J_TAG '5.26-community')"
 $ApiImage    = V GRAPHRAG_API_IMAGE
@@ -228,6 +234,15 @@ Invoke-Wslc "Starting graphrag-api" (@('run', '-d', '--name', 'graphrag-api', '-
     MCP_ENABLED                     = V MCP_ENABLED
     MCP_ALLOWED_HOSTS               = V MCP_ALLOWED_HOSTS
     MCP_ALLOWED_ORIGINS             = V MCP_ALLOWED_ORIGINS
+    MCP_OAUTH_ISSUER                = V MCP_OAUTH_ISSUER
+    MCP_OAUTH_AUDIENCE              = V MCP_OAUTH_AUDIENCE
+    MCP_OAUTH_RESOURCE              = V MCP_OAUTH_RESOURCE
+    MCP_OAUTH_SCOPES                = V MCP_OAUTH_SCOPES
+    MCP_OAUTH_JWKS_URL              = V MCP_OAUTH_JWKS_URL
+    MCP_OAUTH_EMAIL_CLAIMS          = V MCP_OAUTH_EMAIL_CLAIMS
+    MCP_OAUTH_AUTHORIZATION_SERVERS = V MCP_OAUTH_AUTHORIZATION_SERVERS
+    A2A_OAUTH_RESOURCE              = V A2A_OAUTH_RESOURCE
+    PUBLIC_API_OAUTH_RESOURCE       = V PUBLIC_API_OAUTH_RESOURCE
     TZ                              = V TZ 'Europe/Paris'
 })) + @('-v', "$Data\api:/data", $ApiImage))
 
